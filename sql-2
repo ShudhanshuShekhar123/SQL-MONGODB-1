@@ -1,1 +1,48 @@
 
+CREATE TABLE Restaurants (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    cuisine_type VARCHAR(255),
+    location VARCHAR(255),
+    average_rating DECIMAL(3, 2),
+    delivery_available BOOLEAN
+);
+
+INSERT INTO Restaurants (id, name, cuisine_type, location, average_rating, delivery_available)
+VALUES
+    (1, 'Restaurant A', 'Italian', '123 Main St', 4.5, true),
+    (2, 'Restaurant B', 'Mexican', '456 Oak Ave', 3.8, false),
+    (3, 'Restaurant C', 'Chinese', '789 Elm Rd', 4.2, true),
+    (4, 'Restaurant D', 'Indian', '101 Pine Ln', 4.7, true),
+    (5, 'Restaurant E', 'Japanese', '202 Cedar Dr', 4.0, false);
+
+SELECT * FROM Restaurants ORDER BY average_rating DESC;
+
+db.Restaurants.find().sort({ average_rating: -1 });
+
+SELECT * FROM Restaurants WHERE delivery_available = true AND average_rating > 4;
+
+db.Restaurants.find({ delivery_available: true, average_rating: { $gt: 4 } });
+
+SELECT * FROM Restaurants WHERE cuisine_type IS NULL OR cuisine_type = '';
+db.Restaurants.find({ $or: [{ cuisine_type: null }, { cuisine_type: "" }] });
+
+SELECT COUNT(*) FROM Restaurants WHERE delivery_available = true;
+db.Restaurants.count({ delivery_available: true });
+
+SELECT * FROM Restaurants WHERE location LIKE '%New York%';
+db.Restaurants.find({ location: /New York/ });
+
+SELECT AVG(average_rating) AS avg_rating FROM Restaurants;
+
+db.Restaurants.aggregate([
+  {
+    $group: {
+      _id: null,
+      avg_rating: { $avg: "$average_rating" }
+    }
+  }
+]);
+
+SELECT * FROM Restaurants ORDER BY average_rating DESC LIMIT 5;
+db.Restaurants.find().sort({ average_rating: -1 }).limit(5);
